@@ -1,0 +1,77 @@
+server{
+    listen 443 ssl;
+
+    # ssl_on;
+    # ssl_certificate /etc/ssl/certs/cert1_crt.crt;
+    # ssl_certificate_key /etc/ssl/private/key.key;
+
+    server_name www.loyaltyfox.com
+    65.0.208.153
+    loyaltyfox.com
+    *.loyaltyfox.com;
+    
+    # server_name 65.0.208.153;
+
+    location / {
+        proxy_set_header Host $host;
+        proxy_pass http://unix:/home/ubuntu/flaskapp/flaskapp.sock;
+        
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+	# proxy_pass http://0.0.0.0:8000;
+    }
+    ssl_certificate /etc/letsencrypt/live/loyaltyfox.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/loyaltyfox.com/privkey.pem; # managed by Certbot
+
+
+
+}
+
+
+# server{
+#    # listen 80;
+#    listen 443 ssl;
+#
+#    # ssl_on;
+#    ssl_certificate /etc/ssl/certs/cert1_crt.crt;
+#    ssl_certificate_key /etc/ssl/private/key.key;
+
+#    server_name loyaltyfox.com
+#    www.loyaltyfox.com;
+
+#    # server_name 65.0.208.153;
+
+#    location / {
+#        proxy_pass http://unix:/home/ubuntu/flaskapp/flaskapp.sock;
+#        proxy_set_header Host $host;
+#        proxy_set_header X-Real-IP $remote_addr;
+#        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#        proxy_set_header X-Forwarded-Proto $scheme;
+#    }
+# }
+
+server{
+    if ($host = www.loyaltyfox.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = loyaltyfox.com) {
+        return 301 https://www.$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+
+    server_name www.loyaltyfox.com
+    65.0.208.153
+    loyaltyfox.com
+    *.loyaltyfox.com;
+    return 404; # managed by Certbot
+
+
+
+
+}
